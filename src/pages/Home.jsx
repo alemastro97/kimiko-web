@@ -1,0 +1,214 @@
+import { useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
+
+const pricing = [
+  {
+    title: 'Bust', price: '$18', emoji: '🌸',
+    features: ['Head & shoulders', '1 character', 'Simple BG'],
+    gradient: 'from-sakura-100 to-white',
+  },
+  {
+    title: 'Full Body', price: '$30', emoji: '✨',
+    features: ['Complete character', 'Outfit details', 'Simple BG'],
+    gradient: 'from-gold-300/30 to-white',
+    featured: true,
+  },
+  {
+    title: 'Sticker Pack', price: '$40', emoji: '💖',
+    features: ['6 expressions', 'Transparent BG', 'Print-ready'],
+    gradient: 'from-sakura-200/40 to-white',
+  },
+]
+
+const galleryItems = [
+  { id: 1, category: 'outfit',  title: 'Lolita Dress',    emoji: '👗' },
+  { id: 2, category: 'pokemon', title: 'Pikachu Trainer', emoji: '⚡' },
+  { id: 3, category: 'fantasy', title: 'Magical Girl',    emoji: '✨' },
+  { id: 4, category: 'outfit',  title: 'School Uniform',  emoji: '🎒' },
+  { id: 5, category: 'pokemon', title: 'Eevee Lover',     emoji: '🦊' },
+  { id: 6, category: 'couple',  title: 'Cute Couple',     emoji: '💕' },
+  { id: 7, category: 'fantasy', title: 'Witch Chibi',     emoji: '🧙‍♀️' },
+  { id: 8, category: 'outfit',  title: 'Kimono Style',    emoji: '🌸' },
+]
+
+export default function Home() {
+  const charRef  = useRef(null)
+  const titleRef = useRef(null)
+  const enteredRef = useRef(false)
+
+  useEffect(() => {
+    const charEl  = charRef.current
+    const titleEl = titleRef.current
+    if (!charEl || !titleEl) return
+
+    // slide character in from right, vertically centered
+    const enterTimer = setTimeout(() => {
+      charEl.style.transition = 'transform 1s cubic-bezier(0.34, 1.56, 0.64, 1)'
+      charEl.style.transform  = 'translateX(0%) translateY(-50%)'
+      enteredRef.current = true
+    }, 100)
+
+    const onScroll = () => {
+      if (!enteredRef.current) return
+      const scrollY   = window.scrollY
+      const maxScroll = 500
+      const progress  = Math.min(scrollY / maxScroll, 1)
+
+      charEl.style.transition = 'transform 0.1s ease-out'
+      charEl.style.transform  = `translateX(${progress * 120}%) translateY(-50%)`
+
+      const titleShift = progress * 17
+      titleEl.style.transition = 'transform 0.1s ease-out'
+      titleEl.style.transform  = `translateX(${titleShift}vw)`
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      clearTimeout(enterTimer)
+      window.removeEventListener('scroll', onScroll)
+    }
+  }, [])
+
+  return (
+    <div>
+      {/* ── HERO ── */}
+      <section className="snap-start relative min-h-screen flex items-center overflow-hidden bg-gradient-to-b from-sakura-100 via-white to-sakura-50">
+
+        {/* LEFT — title + CTA */}
+        <div
+          ref={titleRef}
+          className="relative z-10 w-full md:w-2/3 px-10 md:pl-16 md:pr-6 py-20 flex flex-col items-center"
+          style={{ willChange: 'transform' }}
+        >
+          <div className="mb-4 px-4 py-1 bg-gold-400/20 border border-gold-400/40 rounded-full text-gold-600 text-sm font-bold">
+            ✨ Commissions OPEN ✨
+          </div>
+
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6 text-outlined text-center">
+            Kawaii<br />Chibi<br />Illustrations
+          </h1>
+
+          <p className="text-lg mb-10 text-sakura-500 font-medium text-center max-w-sm">
+            Hand-drawn, sweet and personalized artworks just for you.<br />
+            Commission your character in adorable chibi style!
+          </p>
+
+          <div className="flex flex-wrap gap-4 justify-center">
+            <Link to="/commission" className="btn-kawaii inline-block text-lg">
+              Order Now 💖
+            </Link>
+            <Link to="/gallery" className="btn-kawaii-outline inline-block text-lg">
+              View Gallery 🎨
+            </Link>
+          </div>
+        </div>
+
+        {/* RIGHT — character image (fixed, half-screen wide) */}
+        <div
+          ref={charRef}
+          className="fixed top-1/2 right-0 z-20 pointer-events-none select-none"
+          style={{
+            width: '33vw',
+            maxWidth: '600px',
+            transform: 'translateX(120%) translateY(-50%)',
+            willChange: 'transform',
+          }}
+        >
+          <img
+            src="/chibi-hero.png"
+            alt="Chibi character"
+            className="w-full object-contain drop-shadow-2xl"
+            draggable={false}
+          />
+        </div>
+      </section>
+
+      {/* ── FEATURED WORKS ── */}
+      <section className="snap-start min-h-screen flex flex-col justify-center py-16 px-6">
+        <div className="max-w-5xl mx-auto w-full">
+          <h2 className="text-4xl md:text-5xl font-extrabold text-center mb-2 text-outlined">
+            Featured Works
+          </h2>
+          <p className="text-center text-sakura-400 mb-10 font-medium">A taste of the magic ✨</p>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {galleryItems.map((item, i) => (
+              <div
+                key={item.id}
+                className="card-glow bg-white rounded-2xl border border-sakura-100 p-5 aspect-square flex flex-col items-center justify-center cursor-pointer"
+              >
+                <span
+                  className="text-5xl mb-3 inline-block"
+                  style={{
+                    animation: `float ${3 + i * 0.2}s ease-in-out infinite`,
+                    animationDelay: `${i * 0.2}s`,
+                  }}
+                >
+                  {item.emoji}
+                </span>
+                <span className="text-sakura-500 text-sm font-semibold text-center">{item.title}</span>
+                <span className="text-xs text-gold-500 mt-1 font-medium capitalize">#{item.category}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mt-8">
+            <Link to="/gallery" className="btn-kawaii-outline inline-block">
+              See Full Gallery 🎨
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── PRICING ── */}
+      <section className="snap-start min-h-screen flex flex-col justify-center py-16 px-6 bg-gradient-to-b from-white to-sakura-100">
+        <div className="max-w-5xl mx-auto w-full">
+          <h2 className="text-4xl md:text-5xl font-extrabold text-center mb-2 text-outlined">
+            Pricing
+          </h2>
+          <p className="text-center text-sakura-400 mb-12 font-medium">Affordable kawaii art for everyone 💛</p>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {pricing.map((p) => (
+              <div
+                key={p.title}
+                className={`card-glow relative bg-gradient-to-b ${p.gradient} rounded-3xl p-8 text-center border ${p.featured ? 'border-gold-400 shadow-xl' : 'border-sakura-200 shadow-md'}`}
+              >
+                {p.featured && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold-400 text-white text-xs font-bold px-4 py-1 rounded-full shadow">
+                    ⭐ Most Popular
+                  </div>
+                )}
+                <div className="text-4xl mb-3 animate-float inline-block">{p.emoji}</div>
+                <h3 className="text-2xl font-extrabold mb-1 text-sakura-600">{p.title}</h3>
+                <p className={`text-4xl font-extrabold mb-6 ${p.featured ? 'text-outlined-gold' : 'text-sakura-500'}`}>
+                  {p.price}
+                </p>
+                <ul className="text-sm space-y-2 text-sakura-600">
+                  {p.features.map((f, i) => (
+                    <li key={i} className="flex items-center justify-center gap-2">
+                      <span className="text-gold-500">✦</span> {f}
+                    </li>
+                  ))}
+                </ul>
+                <Link to="/commission" className="btn-kawaii inline-block mt-6 text-sm px-6 py-2">
+                  Order Now
+                </Link>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mt-8">
+            <div className="inline-block bg-white/60 rounded-2xl px-6 py-4 border border-gold-300/40 shadow-sm">
+              <p className="text-sakura-500 font-medium text-sm">
+                💡 Add-ons: Extra character <span className="text-gold-600 font-bold">+$10</span>&nbsp;|&nbsp;
+                Complex BG <span className="text-gold-600 font-bold">+$15</span>&nbsp;|&nbsp;
+                Pokémon <span className="text-gold-600 font-bold">+$8</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  )
+}
