@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom'
-import { PayPalScriptProvider } from '@paypal/react-paypal-js'
 import Home from './pages/Home'
 import Gallery from './pages/Gallery'
 import Commission from './pages/Commission'
@@ -35,7 +34,6 @@ function Nav() {
 
 export default function App() {
   return (
-    <PayPalScriptProvider options={{ clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID || 'test', currency: 'USD' }}>
     <Router>
       <div className="min-h-screen bg-sakura-50 font-sans flex flex-col">
         <Nav />
@@ -53,6 +51,5 @@ export default function App() {
         </footer>
       </div>
     </Router>
-    </PayPalScriptProvider>
   )
 }

@@ -6,17 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "start": "node server/index.js",
-    "build:start": "vite build && node server/index.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
     "@paypal/react-paypal-js": "^9.2.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.0",
-    "express": "^4.18.0",
-    "nodemailer": "^6.9.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-router-dom": "^7.15.1"

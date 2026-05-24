@@ -1,5 +1,7 @@
 import { useState } from 'react'
-import { PayPalButtons } from '@paypal/react-paypal-js'
+
+const ARTIST_EMAIL   = import.meta.env.VITE_ARTIST_EMAIL   || 'your@email.com'
+const PAYPAL_ME_USER = import.meta.env.VITE_PAYPAL_ME_USER || 'yourpaypalme'
 
 const initialForm = {
   name: '', email: '', instagram: '', twitter: '', discord: '',
@@ -15,12 +17,64 @@ const initialForm = {
 const BASE_PRICES = { bust: 18, halfbody: 24, fullbody: 30, stickerpack: 40 }
 
 function calcTotal(f) {
-  let total = BASE_PRICES[f.chibiType] || 18
-  if (f.pokemonStyle) total += 8
-  if (f.extraCharacters === '1') total += 10
-  if (f.extraCharacters === '2') total += 20
-  if (f.background === 'scenic') total += 15
-  return total
+  let t = BASE_PRICES[f.chibiType] || 18
+  if (f.pokemonStyle) t += 8
+  if (f.extraCharacters === '1') t += 10
+  if (f.extraCharacters === '2') t += 20
+  if (f.background === 'scenic') t += 15
+  return t
+}
+
+function buildMailtoBody(f, total, deposit) {
+  const lines = [
+    `=== COMMISSION REQUEST ===`,
+    ``,
+    `👤 CONTACT`,
+    `Name: ${f.name}`,
+    `Email: ${f.email}`,
+    f.instagram ? `Instagram: ${f.instagram}` : null,
+    f.twitter   ? `Twitter: ${f.twitter}`     : null,
+    f.discord   ? `Discord: ${f.discord}`     : null,
+    ``,
+    `🎨 COMMISSION`,
+    `Type: ${f.chibiType} ($${BASE_PRICES[f.chibiType]})`,
+    f.style ? `Style: ${f.style}` : null,
+    ``,
+    `👤 CHARACTER`,
+    f.characterName ? `Name: ${f.characterName}` : null,
+    f.gender        ? `Gender: ${f.gender}`       : null,
+    `Hair: ${f.hairColor} / ${f.hairStyle}`,
+    `Eyes: ${f.eyeColor}`,
+    `Skin: ${f.skinTone}`,
+    `Expression: ${f.expression}`,
+    f.pose ? `Pose: ${f.pose}` : null,
+    ``,
+    `👗 OUTFIT`,
+    `Style: ${f.outfitStyle}`,
+    f.outfit      ? `Details: ${f.outfit}`         : null,
+    f.accessories ? `Accessories: ${f.accessories}` : null,
+    ``,
+    `⚡ EXTRAS`,
+    `Pokémon/creature: ${f.pokemonStyle ? f.pokemonDetails : 'No'}`,
+    f.pet ? `Pet: ${f.pet}` : null,
+    `Background: ${f.background}`,
+    `Extra characters: ${f.extraCharacters}`,
+    ``,
+    `🔗 REFERENCES`,
+    f.referenceLinks    ? f.referenceLinks          : '—',
+    f.additionalNotes   ? `Notes: ${f.additionalNotes}` : null,
+    ``,
+    `📅 PROJECT`,
+    f.deadline ? `Deadline: ${f.deadline}` : null,
+    f.budget   ? `Budget: ${f.budget}`     : null,
+    `Usage: ${f.usage}`,
+    ``,
+    `💰 PRICING`,
+    `Total: $${total}`,
+    `Deposit (50%): $${deposit}`,
+  ].filter(Boolean).join('\n')
+
+  return encodeURIComponent(lines)
 }
 
 function Section({ icon, title, children }) {
@@ -35,15 +89,14 @@ function Section({ icon, title, children }) {
   )
 }
 
-const inputCls = 'w-full p-3 border border-sakura-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-sakura-300 focus:border-sakura-300 text-sakura-700 placeholder:text-sakura-300 transition'
+const inputCls  = 'w-full p-3 border border-sakura-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-sakura-300 focus:border-sakura-300 text-sakura-700 placeholder:text-sakura-300 transition'
 const selectCls = `${inputCls} cursor-pointer`
 
 export default function Commission() {
   const [formData, setFormData] = useState(initialForm)
-  const [step, setStep] = useState('form') // 'form' | 'payment' | 'done'
-  const [paypalError, setPaypalError] = useState(null)
+  const [step, setStep]         = useState('form') // 'form' | 'payment' | 'done'
 
-  const total = calcTotal(formData)
+  const total   = calcTotal(formData)
   const deposit = +(total * 0.5).toFixed(2)
 
   const handleChange = (e) => {
@@ -57,6 +110,17 @@ export default function Commission() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  const handleSendEmail = () => {
+    const subject = encodeURIComponent(`🌸 Commission Request — ${formData.name}`)
+    const body    = buildMailtoBody(formData, total, deposit)
+    window.open(`mailto:${ARTIST_EMAIL}?subject=${subject}&body=${body}`)
+    setStep('done')
+  }
+
+  const handlePayPal = () => {
+    window.open(`https://paypal.me/${PAYPAL_ME_USER}/${deposit}`, '_blank')
+  }
+
   return (
     <section className="snap-start min-h-screen py-16 px-6">
       <div className="max-w-3xl mx-auto">
@@ -67,7 +131,7 @@ export default function Commission() {
           Fill in the details so I can create the perfect chibi for you! 💌
         </p>
 
-        {/* ── STEP: DONE ── */}
+        {/* ── DONE ── */}
         {step === 'done' && (
           <div className="bg-white rounded-3xl shadow-xl border border-gold-300 p-10 text-center">
             <div className="text-6xl mb-4 animate-bounce-slow">🎉</div>
@@ -75,31 +139,29 @@ export default function Commission() {
               Thank you!
             </h3>
             <p className="text-sakura-600 text-lg mb-2">
-              Deposit of <span className="font-bold text-gold-600">${deposit}</span> received!
+              Request sent! I'll get back to you within 48 hours 💖
             </p>
-            <p className="text-sakura-400 text-sm">
-              I'll review your request and get back to you within 48 hours 💖
+            <p className="text-sakura-400 text-sm mb-8">
+              Remember to pay the deposit of <span className="text-gold-600 font-bold">${deposit}</span> via PayPal to confirm the slot.
             </p>
-            <button
-              onClick={() => { setFormData(initialForm); setStep('form') }}
-              className="btn-kawaii-outline mt-8 inline-block"
-            >
-              Submit another 🌸
-            </button>
+            <div className="flex flex-wrap justify-center gap-4">
+              <button onClick={handlePayPal} className="btn-kawaii inline-block">
+                Pay ${deposit} via PayPal 💳
+              </button>
+              <button onClick={() => { setFormData(initialForm); setStep('form') }} className="btn-kawaii-outline inline-block">
+                Submit another 🌸
+              </button>
+            </div>
           </div>
         )}
 
-        {/* ── STEP: PAYMENT ── */}
+        {/* ── PAYMENT SUMMARY ── */}
         {step === 'payment' && (
           <div className="bg-white rounded-3xl shadow-xl border border-sakura-100 p-8 space-y-6">
-            <button
-              onClick={() => setStep('form')}
-              className="text-sakura-400 text-sm hover:text-sakura-600 flex items-center gap-1"
-            >
+            <button onClick={() => setStep('form')} className="text-sakura-400 text-sm hover:text-sakura-600 flex items-center gap-1">
               ← Back to form
             </button>
 
-            {/* Summary */}
             <div className="bg-sakura-50 rounded-2xl p-5 border border-sakura-200">
               <h3 className="font-extrabold text-sakura-500 text-lg mb-3">Order Summary</h3>
               <div className="space-y-1 text-sm text-sakura-600">
@@ -108,9 +170,7 @@ export default function Commission() {
                   <span>${BASE_PRICES[formData.chibiType]}</span>
                 </div>
                 {formData.pokemonStyle && (
-                  <div className="flex justify-between">
-                    <span>Pokémon/creature</span><span>+$8</span>
-                  </div>
+                  <div className="flex justify-between"><span>Pokémon/creature</span><span>+$8</span></div>
                 )}
                 {formData.extraCharacters !== '0' && (
                   <div className="flex justify-between">
@@ -119,60 +179,35 @@ export default function Commission() {
                   </div>
                 )}
                 {formData.background === 'scenic' && (
-                  <div className="flex justify-between">
-                    <span>Scenic background</span><span>+$15</span>
-                  </div>
+                  <div className="flex justify-between"><span>Scenic background</span><span>+$15</span></div>
                 )}
                 <div className="border-t border-sakura-200 mt-2 pt-2 flex justify-between font-bold text-base">
                   <span>Total</span><span>${total}</span>
                 </div>
                 <div className="flex justify-between text-gold-600 font-extrabold text-base">
-                  <span>Deposit due now (50%)</span>
-                  <span>${deposit}</span>
+                  <span>Deposit due (50%)</span><span>${deposit}</span>
                 </div>
               </div>
             </div>
 
-            {paypalError && (
-              <div className="p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm">
-                {paypalError}
-              </div>
-            )}
+            <p className="text-center text-sakura-500 text-sm font-medium">
+              Step 1 — send the request via email, then pay the deposit via PayPal
+            </p>
 
-            <div className="rounded-xl overflow-hidden">
-              <PayPalButtons
-                style={{ layout: 'vertical', color: 'gold', shape: 'pill', label: 'pay' }}
-                createOrder={async () => {
-                  setPaypalError(null)
-                  const res = await fetch('/api/orders', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ amount: deposit }),
-                  })
-                  const order = await res.json()
-                  if (order.error) throw new Error(order.error)
-                  return order.id
-                }}
-                onApprove={async (data) => {
-                  const res = await fetch(`/api/orders/${data.orderID}/capture`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ formData }),
-                  })
-                  const capture = await res.json()
-                  if (capture.status === 'COMPLETED') {
-                    setStep('done')
-                  } else {
-                    setPaypalError('Payment not completed. Please try again.')
-                  }
-                }}
-                onError={(err) => setPaypalError('PayPal error: ' + err.message)}
-              />
+            <div className="grid md:grid-cols-2 gap-4">
+              <button onClick={handleSendEmail} className="btn-kawaii py-4 text-base flex flex-col items-center gap-1">
+                <span>📧 Send Request</span>
+                <span className="text-xs opacity-80">Opens your email app</span>
+              </button>
+              <button onClick={handlePayPal} className="btn-kawaii-outline py-4 text-base flex flex-col items-center gap-1">
+                <span>💳 Pay ${deposit} Deposit</span>
+                <span className="text-xs opacity-70">Via PayPal.me</span>
+              </button>
             </div>
           </div>
         )}
 
-        {/* ── STEP: FORM ── */}
+        {/* ── FORM ── */}
         {step === 'form' && (
           <form onSubmit={handleFormSubmit} className="bg-white rounded-3xl shadow-xl border border-sakura-100 p-8 space-y-8">
 
@@ -241,7 +276,7 @@ export default function Commission() {
             </Section>
 
             <Section icon="⚡" title="Pokémon / Pet">
-              <label className="flex items-center gap-3 cursor-pointer group">
+              <label className="flex items-center gap-3 cursor-pointer">
                 <input type="checkbox" name="pokemonStyle" checked={formData.pokemonStyle} onChange={handleChange} className="w-5 h-5 accent-pink-500 rounded" />
                 <span className="text-sakura-600 font-medium">
                   Include a Pokémon or fantasy creature
@@ -307,7 +342,6 @@ export default function Commission() {
               </div>
             </div>
 
-            {/* Terms */}
             <div className="bg-sakura-50 border border-sakura-200 p-5 rounded-2xl">
               <label className="flex items-start gap-3 cursor-pointer">
                 <input type="checkbox" name="agreedTerms" checked={formData.agreedTerms} onChange={handleChange} className="w-5 h-5 mt-0.5 accent-pink-500" required />
@@ -322,7 +356,7 @@ export default function Commission() {
               disabled={!formData.agreedTerms}
               className="w-full btn-kawaii py-4 text-lg disabled:opacity-40 disabled:cursor-not-allowed disabled:scale-100 disabled:shadow-none"
             >
-              Proceed to Payment 💳
+              Review & Pay 💌
             </button>
           </form>
         )}
