@@ -6,15 +6,18 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        kawaii: ['"Bagel Fat One"', 'cursive'],
+      },
       colors: {
         sakura: {
-          50:  '#fff5f8',
-          100: '#ffe4ee',
-          200: '#ffb6c1',
-          300: '#ff85a1',
-          400: '#ff6b9d',
-          500: '#e91e8c',
-          600: '#c41674',
+          50:  '#fef2f5',
+          100: '#fcc5d8',
+          200: '#f5a0be',
+          300: '#ec7aa3',
+          400: '#e25888',
+          500: '#cc3d6e',
+          600: '#a82e58',
         },
         gold: {
           300: '#ffe066',

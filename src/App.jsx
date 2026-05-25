@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom'
+import { Pencil, Image } from 'lucide-react'
 import Home from './pages/Home'
 import Gallery from './pages/Gallery'
 import Commission from './pages/Commission'
@@ -20,8 +21,8 @@ function Nav() {
   return (
     <header className="flex items-center justify-between px-6 py-4 bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 border-b border-sakura-100">
       <Link to="/" className="flex items-center gap-2">
-        <span className="text-2xl animate-wiggle inline-block">🌸</span>
-        <span className="text-xl font-extrabold text-shimmer">Chibi Atelier</span>
+        <Pencil className="w-6 h-6 text-sakura-500 animate-wiggle" strokeWidth={1.5} />
+        <span className="text-xl font-kawaii text-shimmer">Kimiko's Corner</span>
       </Link>
       <nav className="flex items-center gap-2">
         {link('/', 'Home')}
@@ -44,10 +45,10 @@ export default function App() {
             <Route path="/commission" element={<Commission />} />
           </Routes>
         </main>
-        <footer className="fixed bottom-0 left-0 right-0 z-50 py-2 text-center text-xs text-sakura-400 bg-white/80 backdrop-blur-sm border-t border-sakura-100">
-          <span className="animate-sparkle inline-block mr-1">✨</span>
-          © {new Date().getFullYear()} Chibi Atelier — made with love
-          <span className="animate-sparkle inline-block ml-1">✨</span>
+        <footer className="fixed bottom-0 left-0 right-0 z-50 py-2 text-center text-xs text-sakura-400 bg-white/80 backdrop-blur-sm border-t border-sakura-100 flex items-center justify-center gap-1">
+          <Pencil className="w-3 h-3 animate-sparkle" strokeWidth={1.5} />
+          © {new Date().getFullYear()} Kimiko's Corner — made with love
+          <Pencil className="w-3 h-3 animate-sparkle" strokeWidth={1.5} />
         </footer>
       </div>
     </Router>

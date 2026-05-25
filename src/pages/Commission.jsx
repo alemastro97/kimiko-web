@@ -1,11 +1,12 @@
 import { useState } from 'react'
+import { Mail, Palette, User, Shirt, Zap, Layers, Link2, Calendar, ArrowLeft, Send, CreditCard, Heart, RefreshCw, Gift } from 'lucide-react'
 
 const ARTIST_EMAIL   = import.meta.env.VITE_ARTIST_EMAIL   || 'your@email.com'
 const PAYPAL_ME_USER = import.meta.env.VITE_PAYPAL_ME_USER || 'yourpaypalme'
 
 const initialForm = {
   name: '', email: '', instagram: '', twitter: '', discord: '',
-  chibiType: 'bust', style: '', characterName: '', gender: '',
+  chibiType: 'fullbody', style: '', characterName: '', gender: '',
   hairColor: '', hairStyle: '', eyeColor: '', skinTone: '',
   outfit: '', outfitStyle: 'casual', accessories: '', pose: '',
   expression: 'happy', background: 'transparent', pet: '',
@@ -14,10 +15,10 @@ const initialForm = {
   usage: 'personal', agreedTerms: false,
 }
 
-const BASE_PRICES = { bust: 18, halfbody: 24, fullbody: 30, stickerpack: 40 }
+const BASE_PRICES = { fullbody: 30 }
 
 function calcTotal(f) {
-  let t = BASE_PRICES[f.chibiType] || 18
+  let t = BASE_PRICES[f.chibiType] || 30
   if (f.pokemonStyle) t += 8
   if (f.extraCharacters === '1') t += 10
   if (f.extraCharacters === '2') t += 20
@@ -77,11 +78,11 @@ function buildMailtoBody(f, total, deposit) {
   return encodeURIComponent(lines)
 }
 
-function Section({ icon, title, children }) {
+function Section({ Icon, title, children }) {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 pb-2 border-b-2 border-sakura-100">
-        <span className="text-xl">{icon}</span>
+        <Icon className="w-5 h-5 text-sakura-400" strokeWidth={1.5} />
         <h3 className="text-lg font-extrabold text-sakura-500">{title}</h3>
       </div>
       {children}
@@ -128,28 +129,28 @@ export default function Commission() {
           Commission Me
         </h2>
         <p className="text-center mb-10 text-sakura-400 font-medium text-lg">
-          Fill in the details so I can create the perfect chibi for you! 💌
+          Fill in the details so I can create the perfect chibi for you!
         </p>
 
         {/* ── DONE ── */}
         {step === 'done' && (
           <div className="bg-white rounded-3xl shadow-xl border border-gold-300 p-10 text-center">
-            <div className="text-6xl mb-4 animate-bounce-slow">🎉</div>
+            <Gift className="w-16 h-16 mx-auto mb-4 text-sakura-400 animate-bounce-slow" strokeWidth={1} />
             <h3 className="text-3xl font-extrabold text-sakura-500 mb-3 text-outlined">
               Thank you!
             </h3>
             <p className="text-sakura-600 text-lg mb-2">
-              Request sent! I'll get back to you within 48 hours 💖
+              Request sent! I'll get back to you within 48 hours
             </p>
             <p className="text-sakura-400 text-sm mb-8">
               Remember to pay the deposit of <span className="text-gold-600 font-bold">${deposit}</span> via PayPal to confirm the slot.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <button onClick={handlePayPal} className="btn-kawaii inline-block">
-                Pay ${deposit} via PayPal 💳
+              <button onClick={handlePayPal} className="btn-kawaii inline-flex items-center gap-2">
+                <CreditCard className="w-4 h-4" strokeWidth={2} /> Pay ${deposit} via PayPal
               </button>
-              <button onClick={() => { setFormData(initialForm); setStep('form') }} className="btn-kawaii-outline inline-block">
-                Submit another 🌸
+              <button onClick={() => { setFormData(initialForm); setStep('form') }} className="btn-kawaii-outline inline-flex items-center gap-2">
+                <RefreshCw className="w-4 h-4" strokeWidth={2} /> Submit another
               </button>
             </div>
           </div>
@@ -159,7 +160,7 @@ export default function Commission() {
         {step === 'payment' && (
           <div className="bg-white rounded-3xl shadow-xl border border-sakura-100 p-8 space-y-6">
             <button onClick={() => setStep('form')} className="text-sakura-400 text-sm hover:text-sakura-600 flex items-center gap-1">
-              ← Back to form
+              <ArrowLeft className="w-4 h-4" strokeWidth={2} /> Back to form
             </button>
 
             <div className="bg-sakura-50 rounded-2xl p-5 border border-sakura-200">
@@ -196,11 +197,11 @@ export default function Commission() {
 
             <div className="grid md:grid-cols-2 gap-4">
               <button onClick={handleSendEmail} className="btn-kawaii py-4 text-base flex flex-col items-center gap-1">
-                <span>📧 Send Request</span>
+                <span className="flex items-center gap-2"><Send className="w-4 h-4" strokeWidth={2} /> Send Request</span>
                 <span className="text-xs opacity-80">Opens your email app</span>
               </button>
               <button onClick={handlePayPal} className="btn-kawaii-outline py-4 text-base flex flex-col items-center gap-1">
-                <span>💳 Pay ${deposit} Deposit</span>
+                <span className="flex items-center gap-2"><CreditCard className="w-4 h-4" strokeWidth={2} /> Pay ${deposit} Deposit</span>
                 <span className="text-xs opacity-70">Via PayPal.me</span>
               </button>
             </div>
@@ -211,7 +212,7 @@ export default function Commission() {
         {step === 'form' && (
           <form onSubmit={handleFormSubmit} className="bg-white rounded-3xl shadow-xl border border-sakura-100 p-8 space-y-8">
 
-            <Section icon="📩" title="Contact Information">
+            <Section Icon={Mail} title="Contact Information">
               <div className="grid md:grid-cols-2 gap-3">
                 <input name="name" value={formData.name} onChange={handleChange} className={inputCls} placeholder="Full Name *" required />
                 <input name="email" type="email" value={formData.email} onChange={handleChange} className={inputCls} placeholder="Email *" required />
@@ -221,14 +222,9 @@ export default function Commission() {
               </div>
             </Section>
 
-            <Section icon="🎨" title="Commission Type">
+            <Section Icon={Palette} title="Commission Type">
               <div className="grid md:grid-cols-2 gap-3">
-                <select name="chibiType" value={formData.chibiType} onChange={handleChange} className={selectCls}>
-                  <option value="bust">Bust ($18)</option>
-                  <option value="halfbody">Half Body ($24)</option>
-                  <option value="fullbody">Full Body ($30)</option>
-                  <option value="stickerpack">Sticker Pack ($40)</option>
-                </select>
+                <div className={`${inputCls} font-semibold text-sakura-600`}>Full Body — $30</div>
                 <select name="style" value={formData.style} onChange={handleChange} className={selectCls}>
                   <option value="">Choose a style...</option>
                   <option value="soft">Soft & Pastel</option>
@@ -239,7 +235,7 @@ export default function Commission() {
               </div>
             </Section>
 
-            <Section icon="👤" title="Character Details">
+            <Section Icon={User} title="Character Details">
               <div className="grid md:grid-cols-2 gap-3">
                 <input name="characterName" value={formData.characterName} onChange={handleChange} className={inputCls} placeholder="Character Name" />
                 <input name="gender" value={formData.gender} onChange={handleChange} className={inputCls} placeholder="Gender / Pronouns" />
@@ -258,7 +254,7 @@ export default function Commission() {
               </div>
             </Section>
 
-            <Section icon="👗" title="Outfit & Accessories">
+            <Section Icon={Shirt} title="Outfit & Accessories">
               <div className="grid md:grid-cols-2 gap-3">
                 <select name="outfitStyle" value={formData.outfitStyle} onChange={handleChange} className={selectCls}>
                   <option value="casual">Casual</option>
@@ -275,7 +271,7 @@ export default function Commission() {
               </div>
             </Section>
 
-            <Section icon="⚡" title="Pokémon / Pet">
+            <Section Icon={Zap} title="Pokémon / Pet">
               <label className="flex items-center gap-3 cursor-pointer">
                 <input type="checkbox" name="pokemonStyle" checked={formData.pokemonStyle} onChange={handleChange} className="w-5 h-5 accent-pink-500 rounded" />
                 <span className="text-sakura-600 font-medium">
@@ -289,7 +285,7 @@ export default function Commission() {
               <input name="pet" value={formData.pet} onChange={handleChange} className={inputCls} placeholder="Other pet/companion" />
             </Section>
 
-            <Section icon="🌈" title="Background & Extras">
+            <Section Icon={Layers} title="Background & Extras">
               <div className="grid md:grid-cols-2 gap-3">
                 <select name="background" value={formData.background} onChange={handleChange} className={selectCls}>
                   <option value="transparent">Transparent</option>
@@ -305,12 +301,12 @@ export default function Commission() {
               </div>
             </Section>
 
-            <Section icon="🔗" title="References & Notes">
+            <Section Icon={Link2} title="References & Notes">
               <textarea name="referenceLinks" value={formData.referenceLinks} onChange={handleChange} className={`${inputCls} resize-none`} placeholder="Reference links (Pinterest, image URLs...)" rows="3" />
               <textarea name="additionalNotes" value={formData.additionalNotes} onChange={handleChange} className={`${inputCls} resize-none`} placeholder="Anything else I should know?" rows="3" />
             </Section>
 
-            <Section icon="📅" title="Project Info">
+            <Section Icon={Calendar} title="Project Info">
               <div className="grid md:grid-cols-2 gap-3">
                 <input type="date" name="deadline" value={formData.deadline} onChange={handleChange} className={inputCls} />
                 <select name="budget" value={formData.budget} onChange={handleChange} className={selectCls}>
@@ -354,9 +350,9 @@ export default function Commission() {
             <button
               type="submit"
               disabled={!formData.agreedTerms}
-              className="w-full btn-kawaii py-4 text-lg disabled:opacity-40 disabled:cursor-not-allowed disabled:scale-100 disabled:shadow-none"
+              className="w-full btn-kawaii py-4 text-lg disabled:opacity-40 disabled:cursor-not-allowed disabled:scale-100 disabled:shadow-none flex items-center justify-center gap-2"
             >
-              Review & Pay 💌
+              <Heart className="w-5 h-5" strokeWidth={2} /> Review & Pay
             </button>
           </form>
         )}
