@@ -1,5 +1,7 @@
 import { useState } from 'react'
-import { LayoutGrid, Shirt, Zap, Wand2, Heart, PawPrint, Palette, Star, Backpack, Users, Flame, Sparkles, X } from 'lucide-react'
+import { LayoutGrid, Shirt, Zap, Wand2, Heart, PawPrint, Palette, Star, Backpack, Users, Flame, Sparkles, Instagram } from 'lucide-react'
+
+const IG_PROFILE = 'https://www.instagram.com/kimiko_mg/'
 
 const workFiles = import.meta.glob('../works/*.{png,jpg,jpeg,webp}', { eager: true })
 
@@ -36,8 +38,7 @@ const catIconMap = {
 const allCategories = ['all', ...new Set(galleryItems.map(i => i.category))]
 
 export default function Gallery() {
-  const [filter, setFilter]     = useState('all')
-  const [selected, setSelected] = useState(null)
+  const [filter, setFilter] = useState('all')
 
   const filtered = filter === 'all' ? galleryItems : galleryItems.filter(i => i.category === filter)
 
@@ -68,28 +69,54 @@ export default function Gallery() {
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
           {filtered.map((item, i) => (
-            <div
-              key={item.id}
-              onClick={() => item.src && setSelected(item)}
-              className={`card-glow group relative bg-white rounded-3xl border border-sakura-100 overflow-hidden aspect-square flex flex-col items-center justify-center ${item.src ? 'cursor-zoom-in' : 'p-5'}`}
-            >
-              {item.src ? (
-                <img src={item.src} alt={item.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
-              ) : (
-                <>
-                  <item.Icon
-                    className="w-14 h-14 mb-3 text-sakura-300"
-                    strokeWidth={1}
-                    style={{ animation: `float ${3 + i * 0.15}s ease-in-out infinite`, animationDelay: `${i * 0.12}s` }}
+            item.src ? (
+              /* ── Instagram-style card ── */
+              <a
+                key={item.id}
+                href={IG_PROFILE}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="card-glow group relative bg-white rounded-2xl border border-sakura-100 overflow-hidden flex flex-col shadow-sm"
+              >
+                {/* header */}
+                <div className="flex items-center gap-2 px-3 py-2 border-b border-sakura-50">
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-sakura-400 to-gold-400 flex items-center justify-center shrink-0">
+                    <Instagram className="w-3.5 h-3.5 text-white" strokeWidth={2} />
+                  </div>
+                  <span className="text-xs font-bold text-sakura-500 truncate">kimiko_mg</span>
+                </div>
+                {/* image */}
+                <div className="aspect-square overflow-hidden">
+                  <img
+                    src={item.src}
+                    alt={item.title}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
-                  <span className="text-sakura-600 font-bold text-center text-sm">{item.title}</span>
-                </>
-              )}
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/40 to-transparent px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <p className="text-white text-xs font-bold capitalize">{item.title}</p>
-                <p className="text-gold-300 text-xs capitalize">#{item.category}</p>
+                </div>
+                {/* footer */}
+                <div className="px-3 py-2">
+                  <p className="text-xs font-bold text-sakura-600 capitalize truncate">{item.title}</p>
+                  <p className="text-xs text-gold-500 capitalize">#{item.category}</p>
+                </div>
+                {/* hover overlay */}
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                  <Instagram className="w-8 h-8 text-white opacity-0 group-hover:opacity-80 transition-opacity drop-shadow" strokeWidth={1.5} />
+                </div>
+              </a>
+            ) : (
+              /* ── placeholder card ── */
+              <div
+                key={item.id}
+                className="card-glow group relative bg-white rounded-3xl border border-sakura-100 overflow-hidden aspect-square flex flex-col items-center justify-center p-5"
+              >
+                <item.Icon
+                  className="w-14 h-14 mb-3 text-sakura-300"
+                  strokeWidth={1}
+                  style={{ animation: `float ${3 + i * 0.15}s ease-in-out infinite`, animationDelay: `${i * 0.12}s` }}
+                />
+                <span className="text-sakura-600 font-bold text-center text-sm">{item.title}</span>
               </div>
-            </div>
+            )
           ))}
         </div>
 
@@ -98,23 +125,6 @@ export default function Gallery() {
         )}
       </div>
 
-      {selected && (
-        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" onClick={() => setSelected(null)}>
-          <div className="relative max-w-2xl w-full" onClick={e => e.stopPropagation()}>
-            <img src={selected.src} alt={selected.title} className="w-full rounded-2xl shadow-2xl" />
-            <div className="text-center mt-3">
-              <p className="text-white font-bold capitalize">{selected.title}</p>
-              <p className="text-gold-300 text-sm capitalize">#{selected.category}</p>
-            </div>
-            <button
-              onClick={() => setSelected(null)}
-              className="absolute -top-3 -right-3 bg-sakura-500 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-lg hover:bg-sakura-600"
-            >
-              <X className="w-4 h-4" strokeWidth={2.5} />
-            </button>
-          </div>
-        </div>
-      )}
     </section>
   )
 }
