@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { LayoutGrid, Shirt, Zap, Wand2, Heart, PawPrint, Palette, Star, Backpack, Users, Flame, Sparkles, Instagram } from 'lucide-react'
+import { LayoutGrid, Zap, Sparkles, CreditCard, ExternalLink } from 'lucide-react'
 
 const IG_PROFILE = 'https://www.instagram.com/kimiko_mg/'
 
@@ -14,28 +14,18 @@ const worksFromFiles = Object.entries(workFiles).map(([path, mod], i) => {
 })
 
 const placeholders = [
-  { id: 1,  category: 'outfit',  title: 'Lolita Dress',    Icon: Shirt    },
-  { id: 2,  category: 'pokemon', title: 'Pikachu Trainer', Icon: Zap      },
-  { id: 3,  category: 'fantasy', title: 'Magical Girl',    Icon: Wand2    },
-  { id: 4,  category: 'outfit',  title: 'School Uniform',  Icon: Backpack },
-  { id: 5,  category: 'pokemon', title: 'Eevee Lover',     Icon: Star     },
-  { id: 6,  category: 'couple',  title: 'Cute Couple',     Icon: Users    },
-  { id: 7,  category: 'fantasy', title: 'Witch Chibi',     Icon: Sparkles },
-  { id: 8,  category: 'outfit',  title: 'Kimono Style',    Icon: Shirt    },
-  { id: 9,  category: 'pokemon', title: 'Charmander',      Icon: Flame    },
-  { id: 10, category: 'pets',    title: 'With Cat',        Icon: PawPrint },
-  { id: 11, category: 'fantasy', title: 'Fairy Princess',  Icon: Sparkles },
-  { id: 12, category: 'outfit',  title: 'Streetwear',      Icon: Shirt    },
+  { id: 1, category: 'pokemon',      title: 'Chibi + Pokémon',    Icon: Zap        },
+  { id: 2, category: 'full',         title: 'Full Illustration',  Icon: Sparkles   },
+  { id: 3, category: 'business',     title: 'Business Card',      Icon: CreditCard },
 ]
 
 const galleryItems = worksFromFiles.length > 0 ? worksFromFiles : placeholders
 
 const catIconMap = {
-  all: LayoutGrid, outfit: Shirt, pokemon: Zap,
-  fantasy: Wand2, couple: Heart, pets: PawPrint, other: Palette,
+  all: LayoutGrid, pokemon: Zap, full: Sparkles, business: CreditCard,
 }
 
-const allCategories = ['all', ...new Set(galleryItems.map(i => i.category))]
+const allCategories = ['all', 'pokemon', 'full', 'business']
 
 export default function Gallery() {
   const [filter, setFilter] = useState('all')
@@ -43,14 +33,14 @@ export default function Gallery() {
   const filtered = filter === 'all' ? galleryItems : galleryItems.filter(i => i.category === filter)
 
   return (
-    <section className="snap-start min-h-screen py-16 px-6">
+    <section className="snap-start min-h-screen pt-24 pb-16 px-6">
       <div className="max-w-6xl mx-auto">
         <h2 className="text-5xl md:text-6xl text-outlined text-center mb-2">Full Gallery</h2>
         <p className="text-center mb-10 text-sakura-400 font-medium text-lg">Browse my chibi collection</p>
 
         <div className="flex flex-wrap justify-center gap-3 mb-12">
           {allCategories.map(cat => {
-            const CatIcon = catIconMap[cat] || Palette
+            const CatIcon = catIconMap[cat] || LayoutGrid
             return (
               <button
                 key={cat}
@@ -70,7 +60,7 @@ export default function Gallery() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
           {filtered.map((item, i) => (
             item.src ? (
-              /* ── Instagram-style card ── */
+              /* ── ExternalLink-style card ── */
               <a
                 key={item.id}
                 href={IG_PROFILE}
@@ -81,7 +71,7 @@ export default function Gallery() {
                 {/* header */}
                 <div className="flex items-center gap-2 px-3 py-2 border-b border-sakura-50">
                   <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-sakura-400 to-gold-400 flex items-center justify-center shrink-0">
-                    <Instagram className="w-3.5 h-3.5 text-white" strokeWidth={2} />
+                    <ExternalLink className="w-3.5 h-3.5 text-white" strokeWidth={2} />
                   </div>
                   <span className="text-xs font-bold text-sakura-500 truncate">kimiko_mg</span>
                 </div>
@@ -100,7 +90,7 @@ export default function Gallery() {
                 </div>
                 {/* hover overlay */}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                  <Instagram className="w-8 h-8 text-white opacity-0 group-hover:opacity-80 transition-opacity drop-shadow" strokeWidth={1.5} />
+                  <ExternalLink className="w-8 h-8 text-white opacity-0 group-hover:opacity-80 transition-opacity drop-shadow" strokeWidth={1.5} />
                 </div>
               </a>
             ) : (

@@ -35,11 +35,16 @@ export default {
         'spin-slow':  'spin 8s linear infinite',
         wiggle:   'wiggle 1s ease-in-out infinite',
         'bounce-slow': 'bounce 3s infinite',
+        peek:     'peek 3s ease-in-out infinite',
       },
       keyframes: {
         float: {
           '0%, 100%': { transform: 'translateY(0px)' },
           '50%':      { transform: 'translateY(-12px)' },
+        },
+        peek: {
+          '0%, 40%, 100%': { transform: 'translateY(100%)' },
+          '50%, 90%':      { transform: 'translateY(30%)' },
         },
         sparkle: {
           '0%, 100%': { opacity: '1', transform: 'scale(1)' },

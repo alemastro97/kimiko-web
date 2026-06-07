@@ -179,7 +179,7 @@ export default function Commission() {
   const pkg = PACKAGES.find(p => p.key === formData.commissionType)
 
   return (
-    <section className="snap-start min-h-screen py-16 px-6">
+    <section className="snap-start min-h-screen pt-24 pb-48 px-6">
       <div className="max-w-3xl mx-auto">
         <h2 className="text-5xl md:text-6xl font-extrabold text-center mb-2 text-outlined">
           Commission Me
